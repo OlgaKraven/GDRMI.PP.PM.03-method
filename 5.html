@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Методические рекомендации — Инструменты frontend/backend-разработчика</title>
+
+    <!-- Mermaid JS -->
+    <script type="module">
+        import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose"
+        });
+    </script>
+
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            background-color: #ffffff;
+            color: #333333;
+        }
+
+        header {
+            background: #f5f5f5;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1.5rem 2rem 1rem;
+        }
+
+        header h1 { margin: 0 0 0.5rem; font-size: 1.6rem; }
+
+        main {
+            padding: 1.5rem 2rem 3rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        nav {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        nav ul { list-style: none; padding-left: 0; }
+        nav a { color: #e53935; text-decoration: none; }
+        nav a:hover { text-decoration: underline; }
+
+        pre {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: "SFMono-Regular", Consolas, monospace;
+            font-size: 0.9rem;
+        }
+
+        .mermaid {
+            background: #f8f8f8;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        h2, h3, h4 { margin-top: 2rem; }
+        hr { margin: 2rem 0; }
+    </style>
+</head>
+
+<body>
+<header>
+    <h1>Методические рекомендации</h1>
+        <p><strong>Тема:</strong> 5. Теория: Инструменты frontend/backend-разработчика</p>
+</header>
+
+<main>
+
+<nav>
+    <h2>Навигация</h2>
+    <ul>
+        <li><a href="#sec-1">1. Chrome DevTools</a></li>
+        <li><a href="#sec-2">2. Figma и Draw.io</a></li>
+        <li><a href="#sec-3">3. Логи и метрики</a></li>
+        <li><a href="#sec-4">4. Git/GitHub</a></li>
+    </ul>
+</nav>
+
+<!-- 1 -->
+<section id="sec-1">
+<h2>5.1. Использование Chrome DevTools</h2>
+
+<p>Chrome DevTools — основной инструмент анализа фронтенд-приложений. Он показывает загрузку ресурсов, работу JavaScript, рендеринг и производительность.</p>
+
+<h3>5.1.1. Раздел Network — сетевые запросы</h3>
+
+<p><strong>Network позволяет:</strong></p>
+<ul>
+    <li>видеть количество запросов;</li>
+    <li>анализировать статус-коды;</li>
+    <li>оценивать вес файлов;</li>
+    <li>выявлять блокирующие ресурсы;</li>
+    <li>отслеживать работу API.</li>
+</ul>
+
+<p><strong>Пример анализа:</strong></p>
+<pre><code>GET /api/users      200 OK   45 ms   2.1 KB
+GET /styles.css     200 OK   12 ms   14 KB
+GET /image.png      200 OK   98 ms   620 KB   ⚠ слишком тяжёлое изображение</code></pre>
+
+<h3>5.1.2. Раздел Performance — работа JS и рендеринг</h3>
+
+<p><strong>Performance показывает:</strong></p>
+<ul>
+    <li>long tasks (долгие операции JS);</li>
+    <li>Recalculate Style, Layout, Paint;</li>
+    <li>обработку событий;</li>
+    <li>FPS.</li>
+</ul>
+
+<p><strong>Примеры проблем:</strong></p>
+<pre><code>"Recalculate Style: 87ms" — слишком сложные селекторы  
+"Layout: 120ms"          — тяжелая сетка Grid  
+"Long task: 300ms"       — неоптимальный цикл JS</code></pre>
+
+<h3>5.1.3. Раздел Coverage — анализ «мёртвого кода»</h3>
+
+<p><strong>Coverage показывает, что реально используется.</strong></p>
+
+<pre><code>styles.css    10% used  
+main.js       32% used  
+framework.js  5% used  ⚠ подгружён весь React, используется только один хук</code></pre>
+
+<div class="mermaid">
+flowchart TD
+    A[DevTools] --> B[Network]
+    A --> C[Performance]
+    A --> D[Coverage]
+
+    B --> E[Оптимизация ресурсов]
+    C --> F[Оптимизация рендеринга и JS]
+    D --> G[Удаление мёртвого кода]
+</div>
+</section>
+
+<hr>
+
+<!-- 2 -->
+<section id="sec-2">
+<h2>5.2. Использование Figma и Draw.io</h2>
+
+<p>Figma — для UI/UX; Draw.io — для диаграмм, архитектурных схем и документации.</p>
+
+<h3>5.2.1. Figma — дизайн и прототипирование</h3>
+
+<p><strong>Figma используется для:</strong></p>
+<ul>
+    <li>создания UI-макетов;</li>
+    <li>разработки дизайн-систем;</li>
+    <li>прототипов;</li>
+    <li>адаптивного дизайна (Auto Layout);</li>
+    <li>совместной работы.</li>
+</ul>
+
+<pre><code>/UI Kit
+    - Colors
+    - Typography
+    - Components
+
+/Pages
+    - Login
+    - Dashboard
+    - Profile
+
+/Prototypes</code></pre>
+
+<h3>5.2.2. Draw.io — схемы и модели</h3>
+
+<p><strong>Используется для:</strong></p>
+<ul>
+    <li>flowcharts;</li>
+    <li>UML диаграмм;</li>
+    <li>ER-моделей;</li>
+    <li>архитектурных схем;</li>
+    <li>технической документации.</li>
+</ul>
+
+<p><strong>Пример схемы:</strong></p>
+<pre><code>Client → API Gateway → Auth Service
+                      → User Service
+                      → Order Service
+
+Database → PostgreSQL</code></pre>
+
+<div class="mermaid">
+flowchart LR
+    UI[Frontend]
+    API[Backend API]
+    DB[(Database)]
+    Logger[Мониторинг/Логи]
+
+    UI --> API
+    API --> DB
+    API --> Logger
+</div>
+</section>
+
+<hr>
+
+<!-- 3 -->
+<section id="sec-3">
+<h2>5.3. Навыки чтения логов и интерпретации метрик</h2>
+
+<h3>5.3.1. Уровни логирования</h3>
+<table>
+<tr><td><strong>DEBUG</strong></td><td>технические детали</td></tr>
+<tr><td><strong>INFO</strong></td><td>события приложения</td></tr>
+<tr><td><strong>WARN</strong></td><td>возможные проблемы</td></tr>
+<tr><td><strong>ERROR</strong></td><td>ошибки</td></tr>
+<tr><td><strong>FATAL</strong></td><td>критические сбои</td></tr>
+</table>
+
+<h3>5.3.2. Пример логов (JSON)</h3>
+
+<pre><code>{
+  "level": "ERROR",
+  "timestamp": "2025-02-01T12:41:22Z",
+  "service": "OrderService",
+  "message": "Database timeout",
+  "details": {
+    "query": "SELECT * FROM orders",
+    "duration_ms": 1500
+  }
+}</code></pre>
+
+<h3>5.3.3. Основные метрики</h3>
+<ul>
+    <li><strong>Response Time</strong> — скорость ответа</li>
+    <li><strong>Throughput (RPS)</strong> — запросы/сек</li>
+    <li><strong>CPU/Memory Usage</strong> — нагрузка</li>
+    <li><strong>Error Rate</strong> — количество ошибок</li>
+    <li><strong>DB Connections</strong> — загрузка БД</li>
+    <li><strong>Cache Hit Ratio</strong> — эффективность кэша</li>
+</ul>
+
+<div class="mermaid">
+flowchart TD
+    A[Получение логов] --> B[Фильтрация по уровню]
+    B --> C[Анализ ошибок]
+    C --> D[Поиск причин]
+    D --> E[Оптимизация/исправление]
+</div>
+</section>
+
+<hr>
+
+<!-- 4 -->
+<section id="sec-4">
+<h2>5.4. Работа с Git/GitHub</h2>
+
+<h3>5.4.1. Основные команды Git</h3>
+
+<pre><code>git init
+git clone &lt;repo&gt;
+git checkout -b feature/login
+git add .
+git commit -m "Implement login"
+git push origin feature/login
+</code></pre>
+
+<h3>5.4.2. Pull Request — пример описания</h3>
+<pre><code># Feature: Добавление формы авторизации
+
+## Что сделано
+- Создан компонент LoginForm
+- Добавлены валидации
+- Настроена отправка данных на API
+
+## Как тестировать
+1. Открыть /login
+2. Ввести email + пароль
+3. Проверить API-запрос
+</code></pre>
+
+<h3>5.4.3. GitHub Issues — документирование задач</h3>
+
+<pre><code>[BUG] Некорректный заголовок на мобильной версии
+
+Описание: навигационная панель перекрывает контент.
+Приоритет: высокий
+
+Шаги для воспроизведения:
+1. Открыть страницу на смартфоне
+2. Прокрутить вниз
+
+Ожидаемое поведение: контент отображается корректно
+</code></pre>
+
+<h3>5.4.4. Git для отчётности</h3>
+<ul>
+    <li>README.md — документация проекта</li>
+    <li>Wiki — расширенная документация</li>
+    <li>Issues — список задач</li>
+    <li>Pull Requests — история изменений</li>
+    <li>Releases — итоговые версии</li>
+</ul>
+
+<div class="mermaid">
+flowchart LR
+    A[main] --> B[feature-branch]
+    B --> C[pull request]
+    C --> D[review]
+    D --> E[merge]
+    E --> A
+</div>
+
+</section>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Методические рекомендации — Backend-разработка</title>
+
+    <!-- Mermaid JS -->
+    <script type="module">
+        import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose"
+        });
+    </script>
+
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            background-color: #ffffff;
+            color: #333333;
+        }
+
+        header {
+            background: #f5f5f5;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1.5rem 2rem 1rem;
+        }
+
+        header h1 {
+            margin: 0 0 0.5rem;
+            font-size: 1.6rem;
+        }
+
+        main {
+            padding: 1.5rem 2rem 3rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        nav {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        nav ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #e53935;
+        }
+
+        pre {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: "SFMono-Regular", Consolas, monospace;
+            font-size: 0.9rem;
+        }
+
+        .mermaid {
+            background: #f8f8f8;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        h2, h3, h4 {
+            margin-top: 2rem;
+        }
+
+        hr {
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <h1>Методические рекомендации</h1>
+        <p><strong>Тема:</strong> 5. Теория: Backend-разработка</p>
+</header>
+
+<main>
+
+<nav>
+    <h2>Навигация</h2>
+    <ul>
+        <li><a href="#sec-4-1">4.1. Принципы серверной архитектуры</a></li>
+        <li><a href="#sec-4-2">4.2. SQL: SELECT, JOIN, индексы</a></li>
+        <li><a href="#sec-4-3">4.3. Анализ SQL через EXPLAIN</a></li>
+        <li><a href="#sec-4-4">4.4. Проблема N+1</a></li>
+        <li><a href="#sec-4-5">4.5. Принципы кэширования</a></li>
+        <li><a href="#sec-4-6">4.6. Оптимизация БД</a></li>
+    </ul>
+</nav>
+
+<section id="sec-4">
+
+<!-- 4.1 -->
+<section id="sec-4-1">
+<h2>4.1. Принципы серверной архитектуры и обработка HTTP-запросов</h2>
+
+<p>Backend — серверная часть приложения, которая принимает HTTP-запросы, выполняет бизнес-логику, обращается к базе данных и формирует ответ.</p>
+
+<h3>4.1.1. Пример REST-маршрута (Node.js / Express)</h3>
+
+<pre><code>const express = require("express");
+const app = express();
+
+app.use(express.json());
+
+app.get("/api/users/:id", (req, res) => {
+    const userId = req.params.id;
+    res.json({ message: "Получен пользователь", id: userId });
+});
+
+app.post("/api/users", (req, res) => {
+    const data = req.body;
+    res.status(201).json({ created: true, data });
+});
+
+app.listen(3000, () => console.log("Server running on port 3000"));
+</code></pre>
+
+<h3>4.1.2. Типы HTTP-методов</h3>
+<ul>
+    <li><strong>GET</strong> — получение данных</li>
+    <li><strong>POST</strong> — создание ресурса</li>
+    <li><strong>PUT</strong> — полное обновление ресурса</li>
+    <li><strong>PATCH</strong> — частичное обновление</li>
+    <li><strong>DELETE</strong> — удаление</li>
+</ul>
+
+<h3>4.1.3. Пример HTTP-ответа</h3>
+
+<pre><code>{
+  "status": "ok",
+  "data": { "id": 5, "name": "Alex" }
+}
+</code></pre>
+
+<div class="mermaid">
+flowchart LR
+    A[Клиент] --> B[Маршрутизация /api/...]
+    B --> C[Бизнес-логика]
+    C --> D[Обращение к БД]
+    D --> C
+    C --> E[HTTP-ответ]
+    E --> A
+</div>
+</section>
+
+<hr>
+
+<!-- 4.2 -->
+<section id="sec-4-2">
+<h2>4.2. SQL: SELECT, JOIN, агрегирование, индексы</h2>
+
+<h3>4.2.1. SELECT — выборка данных</h3>
+<pre><code>SELECT id, name, email 
+FROM users 
+WHERE active = true;
+</code></pre>
+
+<h3>4.2.2. JOIN — объединение таблиц</h3>
+<pre><code>SELECT users.name, orders.total_price
+FROM users
+JOIN orders ON users.id = orders.user_id;
+</code></pre>
+
+<h3>4.2.3. Агрегирующие функции</h3>
+<pre><code>SELECT 
+    COUNT(*) AS total_orders,
+    SUM(total_price) AS revenue,
+    AVG(total_price) AS average_check
+FROM orders;
+</code></pre>
+
+<h3>4.2.4. Индексы</h3>
+<pre><code>CREATE INDEX idx_orders_user_id
+ON orders(user_id);
+</code></pre>
+
+<p>Индексы ускоряют выборку, соединения и сортировку, но замедляют INSERT/UPDATE.</p>
+
+</section>
+
+<hr>
+
+<!-- 4.3 -->
+<section id="sec-4-3">
+<h2>4.3. Анализ SQL-запросов с помощью EXPLAIN</h2>
+
+<p>EXPLAIN показывает используемые индексы, количество строк, тип соединений и узкие места.</p>
+
+<h3>4.3.1. Пример EXPLAIN</h3>
+
+<pre><code>EXPLAIN
+SELECT users.name, orders.total_price
+FROM users
+JOIN orders ON users.id = orders.user_id
+WHERE users.active = true;
+</code></pre>
+
+<p><strong>Упрощённый результат:</strong></p>
+
+<pre><code>Nested Loop
+ ├─ Filter: (active = true)
+ │   └─ Seq Scan on users
+ └─ Index Scan using idx_orders_user_id on orders
+</code></pre>
+
+<p><strong>Проблема:</strong> Seq Scan — полное сканирование таблицы.</p>
+
+<h3>4.3.2. Оптимизация</h3>
+
+<pre><code>CREATE INDEX idx_users_active ON users(active);
+</code></pre>
+</section>
+
+<hr>
+
+<!-- 4.4 -->
+<section id="sec-4-4">
+<h2>4.4. Приёмы борьбы с проблемой N+1</h2>
+
+<p>N+1 — 1 запрос + N дополнительных запросов для связанных данных.</p>
+
+<h3>4.4.1. Пример N+1 в ORM</h3>
+<pre><code>const posts = await Post.findAll();
+
+for (const post of posts) {
+    const author = await post.getAuthor(); // ещё один запрос
+}
+</code></pre>
+
+<p>100 постов → 101 запрос.</p>
+
+<h3>4.4.2. Решение: eager loading</h3>
+
+<pre><code>const posts = await Post.findAll({
+    include: ["author"]
+});
+</code></pre>
+
+<p>ORM выполнит один JOIN вместо 100 запросов.</p>
+
+<div class="mermaid">
+sequenceDiagram
+    participant App
+    participant DB
+
+    App->>DB: SELECT * FROM posts
+    Note right of App: 1 запрос
+
+    loop Для каждого поста
+        App->>DB: SELECT * FROM users WHERE id = ?
+    end
+</div>
+</section>
+
+<hr>
+
+<!-- 4.5 -->
+<section id="sec-4-5">
+<h2>4.5. Принципы кэширования</h2>
+
+<p>Кэширование ускоряет backend и снижает нагрузку на БД.</p>
+
+<h3>4.5.1. Кэширование в памяти (Redis)</h3>
+<pre><code>const redis = require("redis");
+const client = redis.createClient();
+
+app.get("/api/products", async (req, res) => {
+    const cache = await client.get("products");
+
+    if (cache) return res.json(JSON.parse(cache));
+
+    const data = await db.getProducts();
+    await client.set("products", JSON.stringify(data), { EX: 180 });
+
+    res.json(data);
+});
+</code></pre>
+
+<h3>4.5.2. Кэширование SQL-запросов</h3>
+<pre><code>await db.cacheQuery("SELECT * FROM categories");
+</code></pre>
+
+<h3>4.5.3. Кэширование API-ответов</h3>
+<pre><code>res.set("Cache-Control", "public, max-age=3600");
+res.json(data);
+</code></pre>
+
+<div class="mermaid">
+graph TD
+    A[Backend API] --> B[Кэш уровня запросов]
+    A --> C[Кэш в памяти / Redis]
+    A --> D[Кэш API-ответов]
+</div>
+</section>
+
+<hr>
+
+<!-- 4.6 -->
+<section id="sec-4-6">
+<h2>4.6. Оптимизация структуры таблиц и конфигурации СУБД</h2>
+
+<h3>4.6.1. Правильные типы данных</h3>
+<ul>
+    <li>INTEGER vs BIGINT</li>
+    <li>VARCHAR(50) вместо TEXT</li>
+    <li>BOOLEAN вместо INTEGER</li>
+</ul>
+
+<h3>4.6.2. Первичные и внешние ключи</h3>
+
+<pre><code>CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    total_price NUMERIC(10, 2)
+);
+</code></pre>
+
+<h3>4.6.3. Частичные индексы</h3>
+
+<pre><code>CREATE INDEX idx_users_active
+ON users(active)
+WHERE active = true;
+</code></pre>
+
+<h3>4.6.4. Настройки СУБД</h3>
+
+<ul>
+    <li>pool size</li>
+    <li>shared_buffers</li>
+    <li>work_mem</li>
+    <li>логирование медленных запросов</li>
+    <li>autovacuum</li>
+</ul>
+
+<div class="mermaid">
+flowchart TD
+    A[Проектирование таблиц] --> B[Выбор типов данных]
+    B --> C[Нормализация / ключи]
+    C --> D[Индексы]
+    D --> E[Настройка конфигурации СУБД]
+    E --> F[Мониторинг и EXPLAIN анализ]
+</div>
+
+</section>
+
+</section>
+
+</main>
+</body>
+</html>
