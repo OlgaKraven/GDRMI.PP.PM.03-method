@@ -1,0 +1,51 @@
+site_name: Методические рекомендации по практике ПП.ПМ.03
+use_directory_urls: false
+
+theme:
+  name: material
+  logo: assets/icons/logo.png
+  favicon: assets/icons/logo.png
+  language: ru
+  features:
+    - content.code.copy     # кнопка "копировать"
+    - content.image.zoom    # zoom картинок
+    - navigation.top        # "наверх"
+    - navigation.tracking   # подсветка активного пункта в правом TOC
+    - toc.follow            # правый TOC следует за прокруткой
+  use_directory_urls: false
+plugins:
+- glightbox
+- search
+nav:
+    - Предметные области: domains.md
+    - Теория:
+        - 1. Проектирование и документация в разработке информационных систем: index.md
+        - 2. UI/UX(Принципы и оптимизация): 2.md
+        - 3. Frontend-разработка: 3.md
+        - 4. Backend-разработка: 4.md  
+        - 5. Инструменты frontend/backend-разработчика: 5.md
+        - 6. Отчётность и аналитика: 6.md
+    - Задание: 
+        - 1. Создание проектной документации: 7.md
+        - 2. Разработка дизайна интерфейса пользователя: 8.md
+        - 3. Шаблоны документов: 9.md
+markdown_extensions:
+  - admonition
+  - attr_list
+  - pymdownx.highlight
+  - pymdownx.details
+  - pymdownx.tasklist
+  - md_in_html
+  - pymdownx.blocks.caption
+  - pymdownx.superfences:
+        custom_fences:
+          - name: mermaid
+            class: mermaid
+            format: !!python/name:pymdownx.superfences.fence_code_format
+extra_javascript:
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
+  - js/mermaid-init.js
+
+extra_css:
+  - stylesheets/extra.css
+    
